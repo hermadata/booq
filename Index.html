@@ -834,6 +834,28 @@
   .fmk-modal-kartu .web-btn-primary, .fmk-modal-kartu .web-btn-secondary { border-radius: 999px; }
   .fmk-modal { --fin-aksen: #4f46e5; }
 
+  /* Halaman login */
+  .pf-login { position: fixed; inset: 0; z-index: 300; display: flex; align-items: center; justify-content: center; padding: 20px;
+    background: radial-gradient(1200px 600px at 50% -10%, var(--gm-aksen-lembut, #eef2ff), transparent 60%), var(--web-bg, #f8fafc); overflow-y: auto; }
+  .pf-login[hidden] { display: none; }
+  body.pf-terkunci { overflow: hidden; }
+  body.pf-terkunci .pf-bottomnav { display: none !important; }
+  .pf-login-kartu { width: 100%; max-width: 380px; background: var(--web-panel, #fff); border: 1px solid var(--web-border, #e2e8f0); border-radius: 24px;
+    padding: 32px 28px 24px; box-shadow: 0 20px 50px rgba(15,23,42,0.08); display: flex; flex-direction: column; text-align: center; }
+  .pf-login-logo { width: 54px; height: 54px; border-radius: 17px; font-size: 18px; margin: 0 auto 14px; box-shadow: 0 8px 20px rgba(79,70,229,0.25); }
+  .pf-login-kartu h1 { margin: 0; font-size: 21px; font-weight: 700; color: var(--web-text); letter-spacing: -0.02em; }
+  .pf-login-sub { margin: 4px 0 24px; font-size: 13px; color: var(--web-text-dim); }
+  .pf-login-label { text-align: left; font-size: 12.5px; font-weight: 600; color: var(--web-text); margin-bottom: 6px; }
+  .pf-login-pw { position: relative; }
+  .pf-login-pw .web-form-input { margin: 0; width: 100%; padding: 12px 44px 12px 14px; font-size: 15px; border-radius: 12px; }
+  .pf-login-pw button { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: none; background: none; cursor: pointer; font-size: 16px; padding: 6px 8px; border-radius: 8px; opacity: .7; }
+  .pf-login-pw button:hover { opacity: 1; background: var(--gm-hover, #f1f5f9); }
+  .pf-login-ingat { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--web-text-dim); margin: 12px 0 18px; cursor: pointer; text-align: left; }
+  .pf-login-ingat input { width: 16px; height: 16px; accent-color: var(--gm-aksen, #4f46e5); }
+  .pf-login-btn { width: 100%; padding: 13px 16px; font-size: 14.5px; border-radius: 999px; justify-content: center; }
+  .pf-login .status-text { margin-top: 10px; min-height: 18px; font-size: 12.5px; }
+  .pf-login-kaki { margin-top: 18px; font-size: 11px; color: var(--web-text-dim); }
+
   /* Bottom nav (HP) - gaya aplikasi mobile OmniAI */
   .pf-bottomnav { display: none; }
   .pf-boot { padding: 60px 20px; text-align: center; color: var(--web-text-dim); font-size: 13px; }
@@ -903,6 +925,25 @@
 </head>
 <body>
 <div id="app-web">
+  <!-- ===== Halaman login ===== -->
+  <div id="pf-login" class="pf-login" hidden>
+    <form class="pf-login-kartu" onsubmit="event.preventDefault(); pfLogin();" autocomplete="on">
+      <span class="pf-logo pf-login-logo">Rp</span>
+      <h1>OmniAI Personal</h1>
+      <p class="pf-login-sub">Keuangan &amp; Kekayaan Pribadi</p>
+      <input type="text" name="username" value="developer" autocomplete="username" style="display:none;" aria-hidden="true" tabindex="-1" />
+      <label class="pf-login-label" for="pf-login-pw">Password</label>
+      <div class="pf-login-pw">
+        <input id="pf-login-pw" type="password" class="web-form-input" autocomplete="current-password" placeholder="Masukkan password" />
+        <button type="button" onclick="pfLihatPassword(this)" aria-label="Tampilkan password">👁</button>
+      </div>
+      <label class="pf-login-ingat"><input type="checkbox" id="pf-login-ingat" checked /> Ingat saya di perangkat ini</label>
+      <button type="submit" class="web-btn-primary pf-login-btn" id="pf-login-btn">🔐 Masuk Sebagai Developer</button>
+      <div class="status-text" id="pf-login-status" role="alert" aria-live="polite"></div>
+      <small class="pf-login-kaki">© HERMAWAN · Data tersimpan di Google Spreadsheet milik Anda</small>
+    </form>
+  </div>
+
   <div id="web-loading-bar"></div>
   <div class="web-shell">
     <!-- ================= SIDEBAR (desktop) ================= -->
@@ -943,6 +984,7 @@
             </div>
             <button type="button" class="web-nav-item" onclick="pfBuka('setelan')">⚙️ Pengaturan</button>
             <button type="button" class="web-nav-item" onclick="pfMuatUlangSemua(true)">↻ Muat ulang data</button>
+            <button type="button" class="web-nav-item" onclick="pfKeluar()">🔒 Keluar</button>
           </div>
         </div>
         <div class="web-footer-mini">© HERMAWAN · OmniAI Personal</div>
@@ -1255,7 +1297,7 @@
 
           <div class="fin2-grid2">
             <div class="fin2-kartu">
-              <div class="fin2-kartu-judul">Profil &amp; tampilan</div>
+              <div class="fin2-kartu-judul">Profil &amp; tampilan <button type="button" class="fin2-link" onclick="pfKeluar()">🔒 Keluar</button></div>
               <label class="fin2-label" style="margin-top:0;">Nama di kop laporan</label>
               <div class="pf-form-baris">
                 <input id="pf-set-nama" class="web-form-input" maxlength="60" placeholder="Nama Anda" />
@@ -1328,8 +1370,8 @@
    Mesin UI diangkat dari Finance v2 OmniAI (fin2*, fmk*, sp*), disesuaikan untuk keuangan pribadi.
    ===================================================================================== */
 
-// Isi HANYA kalau file ini di-hosting di luar Apps Script (GitHub Pages dll). Kalau dibuka dari URL
-// web app Apps Script, biarkan kosong - koneksi memakai google.script.run (lebih aman, tanpa PIN).
+// URL Web App Apps Script (dipakai saat halaman ini dibuka dari GitHub Pages / hosting lain).
+// Kalau dibuka langsung dari URL Apps Script, koneksi otomatis memakai google.script.run.
 const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxhllsZUfrF0TBcKSIFdSMC2KOflzCoM9vNjK6-CPV7dYBmVItsSWL4KBOVqRqUBHy-RA/exec';
 
 const el = id => document.getElementById(id);
@@ -1413,8 +1455,24 @@ function pfBarSelesai() {
     clearTimeout(pfBarTimer); pfBarTimer = setTimeout(() => { b.classList.remove('active'); b.style.width = '0%'; }, 450);
   }
 }
-function pfPin() { try { return localStorage.getItem('pf_pin') || ''; } catch (e) { return ''; } }
+/* ---------- Sesi login (password disimpan di perangkat ini, divalidasi di server) ---------- */
+function pfPin() {
+  try { return localStorage.getItem('pf_pin') || sessionStorage.getItem('pf_pin') || ''; } catch (e) { return ''; }
+}
+function pfSimpanPin(pin, ingat) {
+  try {
+    localStorage.removeItem('pf_pin'); sessionStorage.removeItem('pf_pin');
+    (ingat ? localStorage : sessionStorage).setItem('pf_pin', pin);
+  } catch (e) { }
+}
+function pfHapusSesi() {
+  try {
+    localStorage.removeItem('pf_pin'); sessionStorage.removeItem('pf_pin');
+    localStorage.removeItem(PF_SNAP);
+  } catch (e) { }
+}
 function pfKirim_(body) {
+  body = Object.assign({}, body, { pin: body.pin !== undefined ? body.pin : pfPin() });
   return new Promise((resolve, reject) => {
     if (window.google && google.script && google.script.run) {
       google.script.run
@@ -1422,10 +1480,15 @@ function pfKirim_(body) {
         .withFailureHandler(err => reject(new Error((err && err.message) || String(err))))
         .pfApi(JSON.stringify(body));
     } else if (WEB_APP_URL) {
-      fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ pin: pfPin() }, body)) })
-        .then(r => r.json()).then(resolve, reject);
+      fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body), redirect: 'follow' })
+        .then(r => r.text())
+        .then(t => {
+          try { resolve(JSON.parse(t)); }
+          catch (e) { reject(new Error(/<html|<!doctype/i.test(t) ? 'Server Apps Script tidak bisa diakses. Pastikan deployment Web App: Execute as "Me" dan Who has access "Anyone", lalu Deploy versi baru.' : 'Balasan server tidak valid.')); }
+        })
+        .catch(() => reject(new Error('Tidak bisa terhubung ke server. Periksa koneksi internet, atau pastikan deployment Web App berakses "Anyone".')));
     } else {
-      reject(new Error('Backend belum terhubung. Buka aplikasi dari URL Web App Apps Script, atau isi WEB_APP_URL.'));
+      reject(new Error('Backend belum terhubung.'));
     }
   });
 }
@@ -1433,14 +1496,57 @@ async function api(body, opsi) {
   opsi = opsi || {};
   if (!opsi.senyap) pfBarMulai();
   try {
-    let d = await pfKirim_(body);
+    const d = await pfKirim_(body);
     if (d && d.success === false && d.kode === 'PIN') {
-      const pin = prompt(d.error + '\nMasukkan PIN aplikasi:');
-      if (pin) { try { localStorage.setItem('pf_pin', pin); } catch (e) { } d = await pfKirim_(body); }
+      pfHapusSesi();
+      pfTampilLogin('Sesi berakhir atau password sudah diganti. Silakan masuk lagi.');
+      const e = new Error(d.error || 'Silakan masuk terlebih dahulu.'); e.kode = 'PIN'; throw e;
     }
     if (!d || d.success === false) throw new Error((d && d.error) || 'Gagal menghubungi server');
     return d;
   } finally { if (!opsi.senyap) pfBarSelesai(); }
+}
+
+/* ---------- Halaman login ---------- */
+function pfTampilLogin(pesan) {
+  const L = el('pf-login');
+  if (!L) return;
+  L.hidden = false;
+  document.body.classList.add('pf-terkunci');
+  const st = el('pf-login-status');
+  st.className = 'status-text ' + (pesan ? 'err' : '');
+  st.textContent = pesan || '';
+  setTimeout(() => { const i = el('pf-login-pw'); if (i) i.focus(); }, 60);
+}
+async function pfLogin() {
+  const pw = el('pf-login-pw').value, btn = el('pf-login-btn'), st = el('pf-login-status');
+  if (!pw) { st.className = 'status-text err'; st.textContent = 'Masukkan password.'; el('pf-login-pw').focus(); return; }
+  btn.disabled = true; btn.textContent = 'Memeriksa…';
+  st.className = 'status-text'; st.textContent = '';
+  try {
+    const d = await pfKirim_({ aksi: 'login', pin: pw });
+    if (!d || d.success === false) throw new Error((d && d.error) || 'Gagal masuk.');
+    pfSimpanPin(pw, el('pf-login-ingat').checked);
+    el('pf-login-pw').value = '';
+    el('pf-login').hidden = true;
+    document.body.classList.remove('pf-terkunci');
+    pgrToast('✓ Selamat datang');
+    pfMulai();
+  } catch (err) {
+    st.className = 'status-text err'; st.textContent = '✗ ' + err.message;
+    el('pf-login-pw').select();
+  } finally { btn.disabled = false; btn.textContent = '🔐 Masuk Sebagai Developer'; }
+}
+function pfLihatPassword(btn) {
+  const i = el('pf-login-pw'), lihat = i.type === 'password';
+  i.type = lihat ? 'text' : 'password';
+  btn.textContent = lihat ? '🙈' : '👁';
+  btn.setAttribute('aria-label', lihat ? 'Sembunyikan password' : 'Tampilkan password');
+}
+function pfKeluar() {
+  if (!confirm('Keluar dari aplikasi di perangkat ini?')) return;
+  pfHapusSesi();
+  location.reload();
 }
 
 /* ---------- Cache snapshot (localStorage) - tampil instan saat dibuka, diperbarui di latar ---------- */
@@ -1632,10 +1738,14 @@ function pfLencana(n) {
   const nb = el('pf-mt-nbelum'); if (nb) nb.textContent = n ? '(' + n + ')' : '';
 }
 
-async function pfBoot() {
+function pfBoot() {
   pfTerapkanTema();
   try { pf.setelan.tanggalMulai = (JSON.parse(localStorage.getItem('pf_setelan') || '{}').tanggalMulai) || ''; } catch (e) { }
   pfTerapkanPreset('bulan');
+  if (!pfPin()) { pfTampilLogin(''); return; }
+  pfMulai();
+}
+async function pfMulai() {
   const hash = (location.hash || '').replace('#', '').split('/');
   const awalView = PF_JUDUL[hash[0]] ? hash[0] : 'beranda';
   if (hash[0] === 'laporan' && PF_TAB_LAP.includes(hash[1])) pf.tabLap = hash[1];
@@ -1655,7 +1765,8 @@ async function pfBoot() {
     if (pertama) pfBuka(pf.view || awalView); else { pfRenderSemua(); if (pf.view === 'setelan') pfRenderSetelan(); if (pf.view === 'mutasi') pfSpRender(); }
   } catch (err) {
     dataSegarSet(false, true);
-    if (!pf.siap) el('pf-boot').innerHTML = `<div class="fin2-pesan warn" style="max-width:560px; margin:0 auto; text-align:left;">⚠️ <div>Gagal memuat data: ${escapeHtml(err.message)}<small>Pastikan aplikasi dibuka dari URL Web App Apps Script (Deploy → Web app), lalu muat ulang halaman.</small><button type="button" class="fin2-link" onclick="location.reload()">↻ Muat ulang</button></div></div>`;
+    if (err.kode === 'PIN') return;
+    if (!pf.siap) el('pf-boot').innerHTML = `<div class="fin2-pesan warn" style="max-width:560px; margin:0 auto; text-align:left;">⚠️ <div>Gagal memuat data: ${escapeHtml(err.message)}<small>Periksa koneksi internet, lalu muat ulang halaman. Kalau masih gagal, pastikan deployment Web App berakses "Anyone" dan sudah di-Deploy versi terbaru.</small><button type="button" class="fin2-link" onclick="location.reload()">↻ Muat ulang</button></div></div>`;
     else pgrToast('✗ ' + err.message);
   }
 }
